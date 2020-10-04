@@ -1,0 +1,286 @@
+---
+title: "Data605-Week6-HomeWork6-kamath"
+author: "Vinayak Kamath"
+date: "10/03/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(gtools)
+library(stringr)
+```
+
+
+### Home Work 06
+
+01.  box contains 54 red marbles, 9 white marbles, and 75 blue marbles. If a marble is randomly selected from the box, what is the probability that it is red or blue? Express your answer as a fraction or a decimal number rounded to four decimal places.  
+
+      ```{r}
+      red_marbles <- 54
+      white_marbles <- 9
+      blue_marbles <- 75
+      
+      total_marbles <- red_marbles + white_marbles + blue_marbles
+      
+      # probability that it is red or blue is P(red_marbles) + P(blue_marbles)
+      # P(red_marbles) + P(blue_marbles)  = 54/total_marbles  + 75/total_marbles
+      
+      paste0('Probability that it is red or blue is: ' , round((red_marbles/total_marbles 
+      + blue_marbles/total_marbles),4) )
+      ```
+
+---   
+
+2. You are going to play mini golf. A ball machine that contains 19 green golf balls, 20 red golf balls, 24 blue golf balls, and 17 yellow golf balls, randomly gives you your ball. What is the probability that you end up with a red golf ball? Express your answer as a simplified fraction or a decimal rounded to four decimal places.  
+  
+      ```{r}
+      green_golfballs <- 19
+      red_golfballs <- 20
+      blue_golfballs <- 24
+      yellow_golfballs <- 17
+      
+      total_golfballs <- green_golfballs + red_golfballs + blue_golfballs + yellow_golfballs
+      
+      # probability that you end up with a red golf ball is P(red_golfballs) 
+      # P(red_golfballs)    = red_golfballs/total_golfballs 
+      
+      paste0('Probability that it is red golf ball: ' , round(red_golfballs/total_golfballs,4) )
+      ```
+  
+
+---   
+
+3. A pizza delivery company classifies its customers by gender and location of residence. The research department has gathered data from a random sample of 1399 customers. The data is summarized in the table below.  
+
+    
+    **Gender and Residence of Customers**  
+    
+    |                            | Males  | Females |
+    |:---------------------------|:------:|--------:|
+    |Apartment                   |    81  |   228   | 
+    |Dorm                        |   116  |    79   |  
+    |With Parent(s)              |   215  |   252   |  
+    |Sorority/Fraternity House   |   130  |    97   |  
+    |Other                       |   129  |    72   | 
+        
+    
+    What is the probability that a customer is not male or does not live with parents? Write your answer as a fraction or a decimal number rounded to four decimal places.
+    
+      ```{r}
+      # p(not male or does not live with parents)
+      # p(not male) +  p(does not live with parents) - p (not male and does not lives with parent)
+      #  p_n_male   +   p_n_with_parent     -   p_n_male_n_with_parent
+      
+      total_females <- 228 + 79 + 252 + 97 + 72
+      total_males   <- 81 + 116 + 215 + 130 + 129
+      totals <- total_females + total_males
+      
+      p_male <- total_males / totals
+      p_n_male <- 1 - p_male
+
+      total_with_parent <- 215 + 252
+      p_with_parent  <-   total_with_parent / totals
+      p_n_with_parent <- 1 - p_with_parent
+
+      p_n_male_n_with_parent <- (total_females-252)  / totals
+
+      p_final = p_n_male + p_n_with_parent - p_n_male_n_with_parent
+      
+      paste0('probability(not male or does not live with parents)' ,  round(p_final,4) )   
+      
+      ```
+---   
+
+4. Determine if the following events are independent.  
+
+    Going to the gym. Losing weight.  
+      
+    Answer: A) Dependent B) Independent    
+        
+    ***==> Its Independent, not all are successful in losing weight by just going to gym. Diet restriction is also needed to loose weight. Going to gym can alos be for just muscle building or stamina building and not always about weight loss.***.
+
+---   
+
+5. A veggie wrap at City Subs is composed of 3 different vegetables and 3 different condiments wrapped up in a tortilla. If there are 8 vegetables, 7 condiments, and 3 types of tortilla available, how many different veggie wraps can be made?  
+  
+      ```{r}
+      vegetables  <- 8
+      condiments  <- 7
+      tortilla  <- 3
+      
+      # different veggie wraps can be made = combinations(vegetables, 3) * combinations(condiments,3) * combinations(tortilla,1)
+      # use of gtools fucnion combinations
+      # ex: combinations(vegetables, 3)  ==  8! / 3! * (8-3)!
+      
+      combo_count = nrow(combinations(vegetables, 3)) * nrow(combinations(condiments,3)) * nrow(combinations(tortilla,1))
+      
+      paste0('Different veggie wraps can be made: ' , combo_count )   
+      ```
+
+---   
+
+6. Determine if the following events are independent.  
+
+    Jeff runs out of gas on the way to work. Liz watches the evening news.  
+    
+    Answer: A) Dependent B) Independent    
+    
+    ***==> Its Independent, Running out of gas and wathcing evening news has no dependency***.
+
+---   
+
+7. The newly elected president needs to decide the remaining 8 spots available in the cabinet he/she is appointing. If there are 14 eligible candidates for these positions (where rank matters), how many different ways can the members of the cabinet be appointed?  
+  
+      ```{r}
+      spots  <- 8
+      eligible_candidates  <- 14
+
+      fact_combo_cabinet =   factorial (spots) / ( factorial(eligible_candidates-spots) )
+      
+      paste0('different ways can the members of the cabinet be appointed: ' , fact_combo_cabinet ) 
+        
+      ```  
+---   
+
+8. A bag contains 9 red, 4 orange, and 9 green jellybeans. What is the probability of reaching into the bag and randomly  withdrawing 4 jellybeans such that the number of red ones is 0, the number of orange ones is 1, and the number of green ones is 3? Write your answer as a fraction or a decimal number rounded to four decimal places.   
+  
+      ```{r}
+      red_beans <- 9
+      orange_beans <- 4
+      green_beans <- 9
+      
+      total_beans <- red_beans + orange_beans + green_beans
+
+      # Probability of picking 4 jellybeans with 0 reds, 1 orange and, 3 green ones is 
+      
+      pick_4 = ( choose(red_beans, 0) * choose(orange_beans, 1 ) * choose(green_beans, 3) ) / choose(total_beans, 4)
+      
+      paste0('Probability of picking 4 jellybeans with 0 reds, 1 orange and, 3 green ones is : ' , round(pick_4,4) )
+
+      ```  
+  
+---   
+
+09. Evaluate the following expression.   11! / 7!  
+
+      ```{r}
+      paste0('11! / 7! : ' , factorial (11) / factorial(7) )
+      ```
+
+---   
+
+10. Describe the complement of the given event.  
+    67% of subscribers to a fitness magazine are over the age of 34.  
+
+    ***==> Complement for above is ; there is 33% (100% - 67%) of subscribers to a fitness magazine are UNDER the age of 34***.
+
+---   
+
+11. If you throw exactly three heads in four tosses of a coin you win $97. If not, you pay me $30.   
+
+    Step 1. Find the expected value of the proposition. Round your answer to two decimal places.  
+    
+    ***==> 16 combinations with  4 tosses (H - Head ; T - Tail)***  
+    ***HHHT, HHTH, HHTT, HHHH, HTTH, HTHT, HTHH, HTTT , TTHH, TTHT, TTHH, TTTT, THHT, THHH, THTT, THTH***  
+    ***getting exactly three heads is only 4 times - HHHT , HHTH, HTHH, THHH ***
+    
+      ```{r}
+      Winning_prob <- 4/16
+      Winning_prob
+      
+      loosing_prob <- 1 - Winning_prob
+      
+      expected_value <- (Winning_prob * 97) + (loosing_prob * (-30))
+      paste0('expected value of the proposition : ' , round(expected_value, 2) )
+    
+      ```
+    
+    Step 2. If you played this game 559 times how much would you expect to win or lose? (Losses must be entered as negative.)  
+      ```{r}
+      paste0('expected value with 559 times : ' , round(expected_value, 2) * 559  )
+      ```    
+
+---   
+
+12. Flip a coin 9 times. If you get 4 tails or less, I will pay you $23. Otherwise you pay me $26.  
+
+    Step 1. Find the expected value of the proposition. Round your answer to two decimal places.  
+
+    ***==> 512 combinations with  9 tosses (H - Head ; T - Tail)***  
+    
+      ```{r, include=FALSE}
+      
+      a = c('HHH' , 'HHT', 'HTH' , 'HTT', 'TTH',  'TTT', 'THT', 'THH')
+      b=0
+      final =  vector(mode = "list", length = 512)
+      for (i in 1:8) {
+        for (j in 1:8) { 
+        for ( k in 1:8)  { 
+        b = b+1  
+        final[b] = paste(a[i],a[j],a[k], sep='')
+        }
+       } 
+      }
+      
+      Winning =0
+      
+      for ( l in 1:512) {
+       if (str_count(final[l], "T") <= 4 & str_count(final[l], "T") > 0) {
+       print(l)
+       print(final[l])
+       Winning  = Winning + 1
+       }
+      }
+      ```
+      
+      ```{r}
+      paste0('Getting 4 tails or less : ' , Winning )
+      Winning_prob <- Winning / 512
+      
+      loosing_prob <- 1 - Winning_prob
+
+      expected_value <- (Winning_prob * 23) + (loosing_prob * (-26))
+      paste0('expected value of the proposition : ' , round(expected_value, 2) )
+    
+      ```    
+    Step 2. If you played this game 994 times how much would you expect to win or lose? (Losses must be entered as negative.)  
+      ```{r}
+      paste0('expected value with 994 times : ' , round(expected_value, 2) * 994  )
+      ```   
+---   
+
+13. The sensitivity and specificity of the polygraph has been a subject of study and debate for years. A 2001 study of the use of polygraph for screening purposes suggested that the probability of detecting a liar was .59 (sensitivity) and that the probability of detecting a "truth teller" was .90 (specificity). We estimate that about 20% of individuals selected for the screening polygraph will lie.  
+    
+    ```{r}
+    p_liar <- .59
+    p_truthteller <- .9
+    p_lie <- .2
+    p_truth <- 1- p_lie
+    ```
+      
+    a. What is the probability that an individual is actually a liar given that the polygraph detected him/her as such? (Show me the table or the formulaic solution or both.)  
+    
+        ```{r}
+        paste0('probability that an individual is actually a liar given that the polygraph detected him/her as such : ' 
+        , p_liar * p_lie  )
+        ```
+    
+    b. What is the probability that an individual is actually a truth-teller given that the polygraph detected him/her as such? (Show me the table or the formulaic solution or both.)    
+    
+        ```{r}
+        paste0('probability that an individual is actually a truth-teller given that the polygraph detected him/her as such : ' 
+        , p_truthteller * p_truth  )
+        ```
+    
+    c. What is the probability that a randomly selected individual is either a liar or was identified as a liar by the polygraph? Be sure to write the probability statement.    
+    
+        ```{r}
+        paste0('probability that a randomly selected individual is either a liar or was identified as a liar by the polygraph : ' 
+        , (p_liar * p_lie) +  (p_truth * (1-p_truthteller)) )      
+        ```
+
+
+---   
