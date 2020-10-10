@@ -1,0 +1,105 @@
+---
+title: "Data605-Week7-HomeWork7-kamath"
+author: "Vinayak Kamath"
+date: "10/11/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(gtools)
+library(stringr)
+```
+
+
+### Home Work 07
+
+1. Let X1, X2, . . . , Xn be n mutually independent random variables, each of which is uniformly distributed on the integers from 1 to k. Let Y denote the minimum of the Xi’s. Find the distribution of Y .  
+
+      ==> The solution should be: $1≤j≤k,m(j)= ( ((k−j+1)^n−(k−j)^n) / k^n )$
+      
+      Since Y is the minimum value of Xi over all of the Xi′s, then in order to find the distribution function m(j)=P(Y=j), we will need to count the number of ways that we can assign X1,X2......Xn to values between j and k with at least one Xi being assigned to j and divide by the total number of possible ways to assign X1,X2......Xn to values between 1 and k.  
+      
+      First, suppose that each Xi has k possibilities: 1, 2,….k. Then, the total possible number of assignments for the entire collection of random variables X1,X2......Xn is kn. This will form the denominator for probability distribution function.  
+      
+      Now, the number of ways of getting Y = 1 is $k^n − (k − 1)^n$, since $k^n$ represents the total number of options and $(k −1)^n$ represents all of the options where none of the Xi’s are equal to 1.
+      
+      If Y = 2, then there are $k^n − (k − 2)^n − [k^n − (k − 1)^n]$ different options for the collection of Xi’s, where the $k^n$ represents the total number of options (with no restrictions), $(k − 2)^n$ represents the number of ways that we could assign X1, ..., Xn with all of their values being greater than 2, and, as we showed above, $[k^n − (k − 1)^n]$ represents the number of ways that we could assign X1, ..., Xn and have at least one of them equal 1 (i.e. Y = 1). We can simplify $k^n − (k − 2)^n − [k^n − (k − 1)^n]$ to get $(k − 1)^n − (k − 2)^n$.  
+      
+      Proceeding in the same manner, we see that, in general, if Y = j then there are $(k −j + 1)^n − (k − j)^n$ ways to assign X1, ..., Xn so that the minimum value is j. Therefore, we should define $m(j)$ to be $( ((k−j+1)^n−(k−j)^n) / k^n )$ .
+
+
+---  
+
+2. Your organization owns a copier (future lawyers, etc.) or MRI (future doctors). This machine has a manufacturer’s expected lifetime of 10 years. This means that we expect one failure every ten years. (Include the probability statements and R Code for each part.).  
+
+    a. What is the probability that the machine will fail after 8 years?. Provide also the expected value and standard deviation. Model as a geometric. (Hint: the probability is equivalent to not failing during the first 8 years..)  
+    
+        ```{r}
+        p <- 1/10
+        q <- 1-p
+        n <- 8
+        
+        p_8year <- pgeom(8,p,lower.tail = F)
+        paste0('Probability that the machine will fail after 8 years : ' , round(p_8year,4) )
+        
+        geo_EV = (q)/(p)
+        paste0('Expected value : ' , round(geo_EV,4) )
+        
+        sd <- sqrt((.9)/(.1^2))    # sd = sqrt(q/p^2)
+        paste0('Standard deviation : ' , round(sd,4) )
+        
+        ```  
+        
+    b. What is the probability that the machine will fail after 8 years?. Provide also the expected value and standard deviation. Model as an exponential. 
+      
+        ```{r}
+        lambda <- 1/10
+        k <- 8
+        
+        p_8year <- exp(-lambda*k)
+        paste0('Probability that the machine will fail after 8 years : ' , round(p_8year,4) )
+        
+        exp_EV = 1/lambda
+        paste0('Expected value : ' , round(exp_EV,4) )
+        
+        sd <- sqrt(1/lambda^2)    
+        paste0('Standard deviation : ' , round(sd,4) )
+        ```      
+        
+    c. What is the probability that the machine will fail after 8 years?. Provide also the expected value and standard deviation. Model as a binomial. (Hint: 0 success in 8 years)  
+    
+        ```{r}
+        n <- 8
+        p <- 1/10
+        q <- 1-p
+        k <- 0
+        
+        p_8year <- dbinom(k, n, p)
+        paste0('Probability that the machine will fail after 8 years : ' , round(p_8year,4) )
+        
+        bin_EV = n*p
+        paste0('Expected value : ' , round(bin_EV,4) )
+        
+        sd <- sqrt(n*p*q) 
+        paste0('Standard deviation : ' , round(sd,4) )
+        ```      
+        
+    d. What is the probability that the machine will fail after 8 years?. Provide also the expected value and standard deviation. Model as a Poisson.  
+
+        ```{r}
+        lambda <- 8/10
+        
+        p_8year <-ppois(0, lambda = 0.8)
+        paste0('Probability that the machine will fail after 8 years : ' , round(p_8year,4) )
+        
+        poi_EV = lambda
+        paste0('Expected value : ' , round(poi_EV,4) )
+        
+        sd <- sqrt(lambda) 
+        paste0('Standard deviation : ' , round(sd,4) )
+        ```    
+
+---   
