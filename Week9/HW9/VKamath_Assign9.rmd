@@ -1,0 +1,137 @@
+---
+title: "Data605-Week9-HomeWork9-kamath"
+author: "Vinayak Kamath"
+date: "10/24/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### Home Work 09
+
+
+1. The price of one share of stock in the Pilsdorff Beer Company (see Exercise 8.2.12) is given by Yn on the nth day of the year. Finn observes that the differences Xn = Yn+1 − Yn appear to be independent random variables with a common distribution having mean μ = 0 and variance sigma^2 = 1/4. If Y1 = 100, estimate the probability that Y365 is:    
+
+a. p>=100  
+    ```{r}
+    mean <- 0  
+    var <- 1/4
+    sd <- sqrt(var)
+    n <- 364  
+    
+    Y1 <- 100
+    Y365 <- 100
+    x <- (Y365- Y1) /sqrt(n)
+    
+    p_norm <- pnorm(x, mean, sd, lower.tail = FALSE)
+    
+    paste0('The probability is ' , round(p_norm, 4))
+    ```  
+      
+b. p>=110  
+    ```{r}
+    mean <- 0  
+    var <- 1/4
+    sd <- sqrt(var)
+    n <- 364  
+    
+    Y1 <- 100
+    Y365 <- 110
+    x <- (Y365- Y1) /sqrt(n)
+    
+    p_norm <- pnorm(x, mean, sd, lower.tail = FALSE)
+    
+    paste0('The probability is ' , round(p_norm, 4))
+    
+    ```  
+  
+c. p>=120  
+    ```{r}
+    mean <- 0  
+    var <- 1/4
+    sd <- sqrt(var)
+    n <- 364  
+    
+    Y1 <- 100
+    Y365 <- 120
+    x <- (Y365- Y1) /sqrt(n)
+    
+    p_norm <- pnorm(x, mean, sd, lower.tail = FALSE)
+    
+    paste0('The probability is ' , round(p_norm, 4))
+    
+    ```  
+      
+---  
+
+2. Calculate the expected value and variance of the binomial distribution using the moment generating function.  
+
+    The binomial is defined as; Suppose a binomial experiment consists of ***n*** trials and results in ***x*** successes. If the probability of success on an individual trial is ***p***, then the binomial probability is: ***b(x,n,p)***  
+    
+    \begin{equation}
+    \binom{n}{x} p^xq^{n−x}
+    \end{equation}
+    
+    where ***q=(1−p)***
+     
+    so the moment generating function is:
+    
+    
+    \[M(t)=\sum_{x=0}^n e^{tx} \binom{n}{x} p^xq^{n−x}= \sum_{x=0}^n \binom{n}{x} (pe^t)^xq^{n−x}=(pe^t+q)^n  \]
+    
+    \[M'(t)=n(pe^t+q)^n−pe^t  \]
+    \[E(X)=M'(0)=np  \]
+    
+    \[M''(t)=n[1−p+pe^t]^{n−1}(pet)+(pe^t)n(n−1)[1−p+pe^t]^{n−2}(pe^t)  \]
+    
+    \[E(X^2)=M''(0)=n(n−1)p^2+np  \]
+    
+    \[Var(X)=E(X^2)−E(X)^2 = n(n−1)p^2+np−(np)^2  \]
+    
+    \[=(n^2p^2−1np^2)+np−(np)^2  \]
+    
+    \[=(np)^2−np^2+np−(np)^2  \]
+    
+    \[=np−np^2 = np(1−p)  \]
+    
+    \[=npq  \]
+
+
+---  
+
+3. Calculate the expected value and variance of the exponential distribution using the moment generating function.  
+
+    The exponential PDF is defined as  
+    
+    \[λe^{−xλ} \]  
+    
+    so the moment generating function is:  
+    
+    \[M(t)=∫_0^\infty e^{tx}λe^{−xλ}dx  \]  
+    
+    \[=λ∫_0^\infty e^{−x(λ−t)}  \]  
+    
+    \[ =−λ \frac {e^{−x(λ−t)} }{ (λ−t) } |_0^\infty   \]  
+    
+    \[=\frac{λ}{λ−t}\]  
+    
+    \[M'(t)=\frac{λ}{(λ−t)} 2E(X)\]  
+    
+    \[=M'(0)=\frac{λ}{λ^2}\]  
+    
+    \[=\frac{1}{λ}\]  
+    
+    \[M''(t)=\frac{2λ}{(λ−t)^3}\]  
+    
+    \[E(X^2)=M''(0)=\frac{2λ}{λ^3}=\frac{2}{λ^2}\]  
+    
+    \[Var(X)=E(X^2)−E(X)^2\]  
+    
+    \[=\frac{2}{λ^2}−\frac{1}{λ^2}=\frac{1}{λ^2}\]  
+
+---  
