@@ -1,0 +1,32 @@
+---
+title: "Data605-Week9-Discussion9-kamath"
+author: "Vinayak Kamath"
+date: "10/24/2020"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+**CHAPTER 9. CENTRAL LIMIT THEOREM**  
+  
+---
+   
+Let X be a continuous random variable with mean μ(X) and variance σ^2(X), and let X^∗=(X−μ)σ be its standardized version. Verify directly that μ(X^∗)=0 and σ^2(X^∗)=1.  
+
+
+\[X^∗= \frac{(X−μ)}{σ} \]  
+
+\[E(X^∗)=\frac{1}{σ}(E(X)−μ) \]  
+
+\[E(X^∗)=\frac{1}{σ}(μ−μ) \]  
+
+\[E(X^∗)=μ(X^∗)=0 \]  
+
+\[σ^2(X^∗)=E(\frac{X−μ}{σ})^2 \]  
+
+\[σ^2(X^∗)=\frac{1}{σ^2}σ^2 \]  
+
+\[σ^2(X^∗)=1 \]  
+
+---
