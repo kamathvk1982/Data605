@@ -1,0 +1,148 @@
+---
+title: "Data605-Week12-HomeWork12-kamath"
+author: "Vinayak Kamath"
+date: "11/08/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### Home Work 12
+
+The attached who.csv dataset contains real-world data from 2008. The variables included follow.    
+
+a. Country: name of the country  
+b. LifeExp: average life expectancy for the country in years  
+c. InfantSurvival: proportion of those surviving to one year or more  
+d. Under5Survival: proportion of those surviving to five years or more  
+e. TBFree: proportion of the population without TB.  
+f. PropMD: proportion of the population who are MDs  
+g. PropRN: proportion of the population who are RNs  
+h. PersExp: mean personal expenditures on healthcare in US dollars at average exchange rate  
+i. GovtExp: mean government expenditures per capita on healthcare, US dollars at average exchange rate  
+j. TotExp: sum of personal and government expenditures.  
+
+---  
+  
+```{r}
+#Reading the file
+df_who = read.csv('who.csv', header = TRUE)
+
+#Displaying the car dataset contents:
+str(df_who)
+
+#Showing stats with Summary function:
+summary(df_who)
+
+```  
+
+---  
+
+1. Provide a scatterplot of LifeExp~TotExp, and run simple linear regression. Do not transform the variables. Provide and interpret the F statistics, R^2, standard error,and p-values only. Discuss whether the assumptions of simple linear regression met.   
+
+    ```{r}
+    # Linear regression model build
+    who_lm <- lm(LifeExp ~ TotExp, data=df_who)
+    who_lm
+
+    # Scatterplot of dependent and independent variables
+    plot(LifeExp~TotExp, data=df_who, 
+         xlab="Total Expenditures", ylab="Life Expectancy",
+         main="Life Expectancy vs Total Expenditures")
+    abline(who_lm, col='blue')
+    
+    who_lm
+    summary(who_lm)
+    
+    ```  
+
+    ***Linear Regression Model : Life Expentancy = 64.75 + .000063 * Total Expenditure The negative y intercept is an indication that any expenditure below 65 would lead to a negative life expectancy. The model is thus unrealistic.***  
+      
+    ***Multiple R-squared: 0.2577, Adjusted R-squared: 0.2537: The low R-squared value tells us that our model only explains for around 25% of the data variation.***  
+      
+    ***Residual standard error: 9.371 on 188 degrees of freedom : It tells us the standard error is somewhat high (10 years). This means that some the sample data points are significantly off the fitted line and that countries that contribute significantly less in healthcare expenditure than what the model would predict, have sustain a life expectancy that is significantly higher than expected.***  
+      
+    ***F-statistic: 65.26 on 1 and 188 DF, p-value: 7.714e-14: The p-value of the model is very low which means we can confindetly reject the null hypothesis that "Expenditure DOES NOT contribute to Country’s Life Expentancy"***  
+  
+---
+
+2. Raise life expectancy to the 4.6 power (i.e., LifeExp^4.6). Raise total expenditures to the 0.06 power (nearly a log transform, TotExp^.06). Plot LifeExp^4.6 as a function of TotExp^.06, and r re-run the simple regression model using the transformed variables. Provide and interpret the F statistics, R^2, standard error, and p-values. Which model is "better?"   
+
+    ```{r}
+    # Transformation
+    LifeExp_1 <- df_who$LifeExp^4.6
+    TotExp_1 <- df_who$TotExp^0.06
+    
+    # Linear regression model build
+    who_lm_1 <- lm(LifeExp_1 ~ TotExp_1)
+    
+    # Scatterplot of dependent and independent variables
+    plot(LifeExp_1~TotExp_1, 
+         xlab="Total Expenditures", ylab="Life Expectancy",
+         main="Life Expectancy vs Total Expenditures (Modified)")
+    abline(who_lm_1, col='red')
+    
+    who_lm_1
+    summary(who_lm_1)
+    ```  
+
+    ***Multiple R-squared: 0.7298, Adjusted R-squared: 0.7283: The high R-squared value of close to 73% means that the response variable explains the model’s variability around the mean 75% of the time.***   
+    
+    ***Residual standard error: 90,490,000 on 188 degrees of freedom: It tells is that  due to the exponentioal increase in these values, the SE should also be expected to increase exponentially.***  
+    
+    ***F-statistic: 507.7 on 1 and 188 DF, p-value: < 2.2e-16: The p-value of the model is very low which means we can reject the null hypothesis "Expenditure^0.06 does not contribute to a country’s Life Expentancy^4.6".***
+    
+    ***It is evident that the variable does contribute in a greater way when compared to the initial model.***  
+
+---
+
+3. Using the results from 3, forecast life expectancy when TotExp^.06 =1.5. Then forecast life expectancy when TotExp^.06=2.5.  
+
+    ```{r}
+    who_predictdata <- data.frame(TotExp_1=c(1.5,2.5))
+    predict(who_lm_1, who_predictdata,interval="predict")^(1/4.6)
+    ```  
+
+    ***Predicting the values at 1.5 adn 2.5 provides the following results:***  
+    ***Prediction at 1.5 is 63 years with a CI(35.93545, 73.00793).***  
+    ***Prediction at 2.5 is 87 year with a CI(81.80643, 90.43414).***  
+      
+---
+
+4. Build the following multiple regression model and interpret the F Statistics, R^2, standard error, and p-values. How good is the model?  
+\[ LifeExp = b0+b1 * PropMd + b2 * TotExp +b3 * PropMD * TotExp \]  
+
+    ```{r}
+    # Multiple linear regression model build
+    who_lm4 <- lm(LifeExp ~ PropMD + TotExp + TotExp:PropMD, data=df_who)
+    who_lm4
+  
+    # Linear regression model summary
+    summary(who_lm4)
+    ``` 
+
+    ***Multiple R-squared: 0.3574, Adjusted R-squared: 0.3471 : The adjusted R-Sqrd is too low at only 35%. The response variables in this model account for only ~35% of the variability.***  
+    
+    ***Residual standard error: 8.765 on 186 degrees of freedom: The residual standard error is significant at 8.765 since the data points are on average off by 8.765 and thus the model is not a good fit to its corresponding data points.***  
+    
+    ***F-statistic: 34.49 on 3 and 186 DF, p-value: < 2.2e-16: The p-value is very low meaning that we can reject the null hypothesis and confidently state that the response variables contribute to the true value of the dependent variable.***  
+
+---
+
+5. Forecast LifeExp when PropMD=.03 and TotExp = 14. Does this forecast seem realistic? Why or why not?  
+
+    ```{r}
+    who_newdata <- data.frame(PropMD=0.03, TotExp=14)
+    predict(who_lm4, who_newdata,interval="predict")
+    ```  
+
+    ***Predicting the values at PropMD=0.03, TotExp=14 provides the following results.***  
+    ***Prediction is 108 years with a CI(84.24791, 131.1441).***  
+    ***The data maxes out about the 90-100 range. Seeing a prediction of 108 becomes unrealistic when the CI also shows 132 years.***  
+
+---
