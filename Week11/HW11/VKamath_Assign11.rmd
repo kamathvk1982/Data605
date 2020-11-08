@@ -1,0 +1,71 @@
+---
+title: "Data605-Week11-HomeWork11-kamath"
+author: "Vinayak Kamath"
+date: "11/08/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#library(tidyverse)
+```
+
+
+### Home Work 11
+
+Using the “cars” dataset in R, build a linear model for stopping distance as a function of speed and replicate the analysis of your textbook chapter 3 (visualization, quality evaluation of the model, and residual analysis.)  
+
+```{r}
+#Displaying the car dataset contents:
+str(cars)
+
+#Showing stats with Summary function:
+summary(cars)
+
+```  
+
+--- 
+
+**==> First to visualize the `cars` data using scatter plot. The x-axis is speed and y-axis is distance :**
+```{r}
+plot(cars[,"speed"], cars[,"dist"], main='CARS DATASET', xlab='Speed', ylab='Distance')
+``` 
+
+***The plot shows that as car speed increases, the stopping distance also inreases as expected. A regression model will help us quantify this relationship.***
+
+--- 
+
+**==> Next, The Linear Model Function :  **
+```{r}
+cars_lm <- lm(cars$dist ~ cars$speed)
+cars_lm
+
+plot(cars[,"speed"], cars[,"dist"], main='CARS DATASET with Linear Model Function', xlab='Speed', ylab='Distance')
+abline(cars_lm, col="blue")
+
+```
+
+--- 
+
+**==> Next, quality evaluation of the model :  **
+```{r}
+summary(cars_lm)
+```
+
+***Multiple R-squared value of 0.6511 and Adjusted R-squared of 0.6438 tells us that the model explains about 65% of the data variation. That says that our model is a good fit but may not be an excellent fit for the data provided.***
+
+--- 
+
+**==> Next, residual analysis: **
+```{r}
+hist(cars_lm$residuals)
+qqnorm(resid(cars_lm))
+qqline(resid(cars_lm))
+```
+
+***Histogram of residual plot appear to be near normally distributed.***  
+***As we can see from the Quantile to Quantile (QQ) plot graph,  samples are closely lined-up to the theoretical qqline. This signifies a normal distribution of the observed data. We can see a divergence though towards the higher positive quantiles. We can say speeds less than 20 (75th quantile); the model is an excellent predictor of stopping distance ***  
+
+---  
