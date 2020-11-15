@@ -1,0 +1,91 @@
+---
+title: "Data605-Week11-Discussion11-kamath"
+author: "Vinayak Kamath"
+date: "11/08/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+
+### Discussion 11 and 12
+
+Using R, create a simple linear regression model and test its assumptions.  You may use any data that interest you.
+
+For this excercise have picked the internal dataset - `trees`
+
+```{r}
+#Displaying the trees dataset contents:
+str(trees)
+
+#Showing stats with Summary function:
+summary(trees)
+
+```  
+
+
+--- 
+
+**==> First to visualize the `trees` data using scatter plot. The x-axis is Height and y-axis is Volume :**
+```{r}
+plot(trees[,"Height"], trees[,"Volume"], main='trees DATASET', xlab='Height', ylab='Volume')
+``` 
+
+***The plot shows that as trees Height increases, the Volume also inreases as expected. A regression model will help us quantify this relationship.***
+
+--- 
+
+**==> Next, The Linear Model Function :  **
+```{r}
+# Create a linear model
+trees_olm <- lm(Volume ~ Height, data = trees)
+trees_olm
+
+plot(trees[,"Height"], trees[,"Volume"], main='trees DATASET with Linear Model Function', xlab='Height', ylab='Volume')
+
+abline(trees_olm, col="blue")
+
+```
+
+--- 
+
+**==> Next, quality evaluation of the model :  **
+```{r}
+summary(trees_olm)
+```
+
+***Multiple R-squared value of 0.3579 and Adjusted R-squared of 0.3358 tells us that the model explains about 36% of the data variation. That says that our model is not a good fit but perhaps a larger set of ore predictors would help make this model better.***
+
+--- 
+
+**==> Next, residual analysis: **
+```{r}
+hist(trees_olm$residuals)
+qqnorm(resid(trees_olm))
+qqline(resid(trees_olm))
+```
+
+***Histogram of residual plot appear to be near normally distributed.***  
+***As we can see from the Quantile to Quantile (QQ) plot graph,  samples are closely lined-up to the theoretical qqline. This signifies a normal distribution of the observed data. We can see a divergence though towards the lower and higher positive quantiles. That says that our model is not a good fit***  
+
+---  
+
+```{r}
+# Ploting Residuals
+trees$pred <- predict(trees_olm, newdata = trees)
+trees$resid <- trees$pred - trees$Volume
+
+ggplot(trees, aes(x = Height, y = resid)) +
+  geom_point() +
+  theme_bw() +
+  geom_hline(yintercept = 0)
+
+```
+
+
+---  
