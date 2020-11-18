@@ -1,7 +1,7 @@
 ---
-title: "Data605-Week11-Discussion11-kamath"
+title: "Data605-Week13-Discussion13-kamath"
 author: "Vinayak Kamath"
-date: "11/08/2020"
+date: "11/15/2020"
 output:
   html_document: default
   pdf_document: default
@@ -9,83 +9,82 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(knitr)
 library(ggplot2)
+library(Stat2Data)
+
 ```
 
 
-### Discussion 11 and 12
+### Discussion 13
 
-Using R, create a simple linear regression model and test its assumptions.  You may use any data that interest you.
+Using R, build a multiple regression model for data that interests you.  Include in this model at least one quadratic term, one dichotomous term, and one dichotomous vs. quantitative interaction term.  Interpret all coefficients. Conduct residual analysis.  Was the linear model appropriate? Why or why not?
 
-For this excercise have picked the internal dataset - `trees`
+For this excercise have picked the dataset - `ThreeCars`
 
 ```{r}
-#Displaying the trees dataset contents:
-str(trees)
+
+data(ThreeCars)
+ThreeCars <- ThreeCars %>%
+  #select(CarType, Price, Mileage) %>%
+  mutate(CarType = as.character(CarType))
+options(digits = 5, scipen = 20, width = 90)
+
+#Displaying the ThreeCars dataset contents:
+str(ThreeCars)
 
 #Showing stats with Summary function:
-summary(trees)
+summary(ThreeCars)
 
 ```  
 
-
---- 
-
-**==> First to visualize the `trees` data using scatter plot. The x-axis is Height and y-axis is Volume :**
+The scatterplot below shows the relationship between mileage, price, and car type.  
 ```{r}
-plot(trees[,"Height"], trees[,"Volume"], main='trees DATASET', xlab='Height', ylab='Volume')
-``` 
+qplot(x = Mileage, y = Price, color = CarType, data = ThreeCars, geom = "point")
+```
 
-***The plot shows that as trees Height increases, the Volume also inreases as expected. A regression model will help us quantify this relationship.***
-
---- 
-
-**==> Next, The Linear Model Function :  **
+The scatterplot below shows the relationship between age, price, and car type.  
 ```{r}
-# Create a linear model
-trees_olm <- lm(Volume ~ Height, data = trees)
-trees_olm
+qplot(x = Age, y = Price, color = CarType, data = ThreeCars, geom = "point")
+```
 
-plot(trees[,"Height"], trees[,"Volume"], main='trees DATASET with Linear Model Function', xlab='Height', ylab='Volume')
+Modeling it for Mileage and Age:
+```{r}
+car_mult_lm <- lm(Price ~ Mileage + CarType + Mileage:CarType, data = ThreeCars)
+car_aget_lm <- lm(Price ~ Age + CarType + Age:CarType, data = ThreeCars)
 
-abline(trees_olm, col="blue")
+qplot(x = .fitted, y = .stdresid, data = car_mult_lm)
+qplot(x = .fitted, y = .stdresid, data = car_aget_lm)
+
+qplot(sample = .stdresid, data = car_mult_lm) + 
+  geom_abline(color = "blue")
+
+qplot(sample = .stdresid, data = car_aget_lm) + 
+  geom_abline(color = "blue")
+
+
+summary(car_mult_lm)
+summary(car_aget_lm)
 
 ```
 
---- 
+**Based on the Mileage:**  
+  
+- For every one thousand mile increase in Mileage for a BMW car (holding all other variables constant), we expect Price to decrease by 0.48988 thousands of dollars ($489.88).   
 
-**==> Next, quality evaluation of the model :  **
-```{r}
-summary(trees_olm)
-```
+- We predict Jaguars to cost $2,062.61 less than BMWs and Porches to cost $14,800.37 more than BMWs (holding mileage and interaction terms fixed).  
 
-***Multiple R-squared value of 0.3579 and Adjusted R-squared of 0.3358 tells us that the model explains about 36% of the data variation. That says that our model is not a good fit but perhaps a larger set of ore predictors would help make this model better.***
+- we expect a BMW car with zero miles to have a price of $56,290.07.  
 
---- 
+**Based on the Age:**   
+  
+- For every one year increase in Age for a BMW car (holding all other variables constant), we expect Price to decrease by 4.826 thousands of dollars ($4,826.00).  
 
-**==> Next, residual analysis: **
-```{r}
-hist(trees_olm$residuals)
-qqnorm(resid(trees_olm))
-qqline(resid(trees_olm))
-```
+- We predict Jaguars to cost $1,238.00 less than BMWs and Porches to cost $5,148.00 more than BMWs (holding mileage and interaction terms fixed).  
 
-***Histogram of residual plot appear to be near normally distributed.***  
-***As we can see from the Quantile to Quantile (QQ) plot graph,  samples are closely lined-up to the theoretical qqline. This signifies a normal distribution of the observed data. We can see a divergence though towards the lower and higher positive quantiles. That says that our model is not a good fit***  
-
----  
-
-```{r}
-# Ploting Residuals
-trees$pred <- predict(trees_olm, newdata = trees)
-trees$resid <- trees$pred - trees$Volume
-
-ggplot(trees, aes(x = Height, y = resid)) +
-  geom_point() +
-  theme_bw() +
-  geom_hline(yintercept = 0)
-
-```
+- we expect a BMW car with zero Years to have a price of $58,227.00.  
 
 
----  
+
+---
