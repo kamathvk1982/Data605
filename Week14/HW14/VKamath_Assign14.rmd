@@ -1,0 +1,103 @@
+---
+title: "Data605-Week14-HomeWork14-kamath"
+author: "Vinayak Kamath"
+date: "11/22/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(pracma)
+
+```
+
+
+### Home Work 14 - TAYLOR SERIES
+
+Q. This week, we'll work out some Taylor Series expansions of popular functions.  
+
+  - $f(x) = \frac{1}{1-x}$  
+  - $f(x) = e^x$  
+  - $f(x) = ln(1 + x)$  
+
+For each function, only consider its valid ranges as indicated in the notes when you are computing the Taylor Series expansion. Please submit your assignment as a R-Markdown document.   
+
+---
+
+General Formula for a Taylor Series Expansion  
+
+\[ f(x)=\sum_{n=0}^∞\frac{f^{(n)}(a)}{n!}(x−a)^n \]
+\[ =f(a)+f′(a)(x−a)+\frac{f′′(a)}{2!}(x−a)^2+\frac{f′′′(a)}{3!}(x−a)^3+⋯\]
+
+---
+
+1. $f(x) = \frac{1}{1-x}$  
+
+
+\[f(x)=1(1−x) \ \ \ \ \ f(0)=1 \]
+\[f′(x)=−\frac{1}{(1−x)^2} \ \ \ \ \ f′(0)=−1 \]
+\[f′′(x)=\frac{2}{(1−x)^3} \ \ \ \ \ 	f′′(0)=2  \]
+\[f′′′(x)=−\frac{6}{(1−x)^4}\ \ \ \ \  	f′′′(0)=−6  \]
+\[f′′′′(x)=\frac{24}{(1−x)^5} \ \ \ \ \ \  f′′′′(0)=24  \]
+
+Pluging into General Formula and we get
+
+\[\frac{1}{(1−x)}=1+\frac{1}{1!}x^1+\frac{2}{2!}x^2+\frac{6}{3!}x^3+\frac{24}{4!}x^4+...\]
+\[=1+x+x^2+x^3+...+x^n\]
+\[=\sum_{n=0}^{∞}x^n for |x| < 1 \]
+
+```{r}
+equation = function(x) {1/(1-x)}
+t = taylor(equation, x0 = 0, n = 4)
+t
+```  
+
+---
+
+2. $f(x) = e^x$  
+
+\[f(x) = e^x \ \ \ \ f(0)=1 \]
+\[f′(x) = e^x \ \ \ \ f′(0)=1 \]
+\[f′′(x) = e^x \ \ \ \ f′′(0)=1 \]
+\[f′′′(x) = e^x \ \ \ \ f′′′(0)=1 \]
+\[f′′′′(x) = e^x \ \ \ \ f′′′′(0)=1 \]
+
+Pluging into General Formula and we get
+
+\[e^x=1+\frac{1}{1!}x^1+\frac{1}{2!}x^2+\frac{1}{3!}x^3+\frac{1}{4!}x^4+...\]
+\[=1+x+\frac{x^2}{2!}+\frac{x^3}{3!}+\frac{x^4}{4!}...\]
+\[=\sum_{n=0}^{∞}\frac{x^n}{n!}\]
+
+```{r}
+equation = function(x) {exp(x)}
+t = taylor(equation, x0 = 0, n = 4)
+t
+```  
+
+---
+
+3. $f(x) = ln(1 + x)$   
+
+\[f(x)=ln(1+x) \ \ \ \ 	f(0)=0\]
+\[f′(x)=\frac{1}{(1+x)} \ \ \ \ 	f′(0)=1\]
+\[f′′(x)=−\frac{1}{(1+x)^2} \ \ \ \ 	f′′(0)=−1\]
+\[f′′′(x)=\frac{2}{(1+x)^3} \ \ \ \ 	f′′′(0)=2\]
+\[f′′′′(x)=−\frac{6}{(1+x)^4}	\ \ \ \ f′′′′(0)=−6\]
+
+Pluging into General Formula and we get
+
+\[f(x) = ln(1 + x) = 0+\frac{1}{1!}x^1−\frac{1}{2!}x^2+\frac{2}{3!}x^3−\frac{6}{4!}x^4...\]
+\[=x−\frac{1}{2}x^2+\frac{1}{3}x^3−\frac{1}{4}x^4...\]
+\[=x−\frac{1}{2}x^2+\frac{1}{3}x^3−\frac{1}{4}x^4...(−1)^{n+1}\frac{1}{n}x^n\]
+\[=\sum_{n=0}^{∞}(-1)^{n+1}\frac{1}{n}x^n\]
+
+```{r}
+equation = function(x)  {log(1+x)}
+t = taylor(equation, x0 = 0, n = 4)
+t
+```  
+
+
+---
