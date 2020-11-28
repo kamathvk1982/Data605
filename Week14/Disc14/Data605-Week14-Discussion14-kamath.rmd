@@ -1,0 +1,53 @@
+---
+title: "Data605-Week14-Discussion14-Kamath"
+author: "Vinayak Kamath"
+date: "11/28/2020"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+### Application of the Derivative  
+  
+### Exercise 4.2 #3   
+
+3. Water flows onto a flat surface at a rate of 5cm3/s forming a circular puddle 10mm deep. How fast is the radius growing when the radius is:  
+(a) 1 cm?  
+(b) 10 cm?  
+(c) 100 cm?  
+  
+
+```{r}
+#function for claculating the growing rate
+growing.rate = function(r,h,rate){
+  Pi = 3.142857  # Aproximation of Pi
+  return(rate / 4 * Pi * h  * r)
+}
+```
+
+---  
+
+```{r}
+#(a) 1 cm?  
+radius=1
+paste0('For radius of 1cm the speed is ' , round(growing.rate(radius,1,5), 4) )
+```
+
+---
+
+```{r}
+#(b) 10 cm?  
+radius=10
+paste0('For radius of 10cm the speed is ' , round(growing.rate(radius,1,5), 4) )
+```
+
+---
+
+```{r}
+#(c) 100 cm?  
+radius=100
+paste0('For radius of 100cm the speed is ' , round(growing.rate(radius,1,5), 4) )
+```
+
+---
