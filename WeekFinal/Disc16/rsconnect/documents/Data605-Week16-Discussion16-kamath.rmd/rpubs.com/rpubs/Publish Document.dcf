@@ -1,0 +1,10 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/700693/56238892d4fc432d8be64ad1d321e5e6
+bundleId: https://api.rpubs.com/api/v1/document/700693/56238892d4fc432d8be64ad1d321e5e6
+url: http://rpubs.com/kamathvk1982/700693
+when: 1607271572.5974

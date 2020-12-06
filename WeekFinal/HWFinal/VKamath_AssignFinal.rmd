@@ -1,0 +1,86 @@
+---
+title: "Data605-Week8-HomeWork8-kamath"
+author: "Vinayak Kamath"
+date: "10/17/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(gtools)
+library(stringr)
+```
+
+
+### Home Work 08
+
+
+11. A company buys 100 lightbulbs, each of which has an exponential lifetime of 1000 hours. What is the expected time for the first of these bulbs to burn out?
+
+    ***==> Solution:***
+    
+    E[Xi] = 1 / λi = 1000
+    
+    Expected lifetime of a bulb is 1000 hours.
+    
+    λi = 1 / 1000
+    
+    Xi is exponential so
+    
+    min{X1,X2,...,X100} ∼ exponential (∑ i=1 to 100 for λi)
+    
+    E[min Xi] = 1/ (1/10) = 10
+    
+    
+    **==> Expected time for the first of these bulbs to burn out is 10 hours**
+
+---  
+
+14. Assume that X1 and X2 are independent random variables, each having an exponential density with parameter λ. Show that Z=X1−X2 has density  
+  
+$fZ(z)=(1/2)λe−λ|z|$
+    
+***==> Solution:***  
+
+  
+![.](./Capture_HW8_PS2.PNG) 
+
+---   
+
+1. Let X be a continuous random variable with mean μ=10 and variance σ2=100/3. Using Chebyshev’s Inequality, find an upper bound for the following probabilities. 
+
+    a. P(|X−10|≥2)  
+        ```{r}
+        var <- 100/3
+        e <- 2
+        p <- var / e^2
+        paste0('Upper bound is ', round(p, 4))
+        ```
+    
+    b. P(|X−10|≥5)   
+        ```{r}
+        var <- 100/3
+        e <- 5
+        p <- var / e^2
+        paste0('Upper bound is ', round(p, 4))
+        ```
+    
+    c. P(|X−10|≥9)    
+        ```{r}
+        var <- 100/3
+        e <- 9
+        p <- var / e^2
+        paste0('Upper bound is ', round(p, 4))
+        ```
+    
+    d. (|X−10|≥20)    
+        ```{r}
+        var <- 100/3
+        e <- 20
+        p <- var / e^2
+        paste0('Upper bound is ', round(p, 4))
+        ```
+
+---

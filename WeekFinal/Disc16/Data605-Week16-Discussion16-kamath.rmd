@@ -1,0 +1,43 @@
+---
+title: "Data605-Week16-Discussion16-Kamath"
+author: "Vinayak Kamath"
+date: "12/05/2020"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+### Functions of Several Variables
+  
+### Exercise 12.1 #17
+
+In Exercises 15 – 22, describe in words and sketch the level curves for the function and given c values.
+
+\[ f(x,y) = x - y^2; c = -2; 0; 2 \]
+
+==> 
+
+Consider $c=0$. Then $f(x,y)= x - y^2 = c = 0$, so $y= ±\sqrt{x}$.  
+With $c=−2$, $y=±\sqrt{x+2}$,   
+and with $c=2$, $y=± \sqrt{x-2}$;   
+  
+so the intersection will have the same shape just shifted by 2.  
+
+```{r}
+library(ggplot2)
+x <- seq(-10,30,0.05)
+y <- seq(-10,10,0.05)
+xy <- data.frame(expand.grid(x=x, y=y))
+z <- xy$x-xy$y^2
+
+f <- data.frame(xy, z)
+
+ggplot(f, aes(x, y, z=z))+
+  geom_raster(aes(fill=z))+
+  geom_contour(breaks=c(-2,0,2), colour="white")+
+  xlab("x")+ylab("y")
+
+```
+
+---
