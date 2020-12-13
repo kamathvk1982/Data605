@@ -1,86 +1,458 @@
 ---
-title: "Data605-Week8-HomeWork8-kamath"
+title: "Data605-Final Project-Computational Mathematics"
 author: "Vinayak Kamath"
-date: "10/17/2020"
+date: "12/19/2020"
 output:
-  html_document: default
+  html_document: 
+    toc: true
+    toc_depth: 4
+    number_sections: true
+    theme: united
+    highlight: tango
   pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(gtools)
-library(stringr)
+library(dplyr)
+library(tidyr)
+library(Hmisc)
+library("tidyverse")
+library(kableExtra)
+
+library(matrixcalc)
+
 ```
-
-
-### Home Work 08
-
-
-11. A company buys 100 lightbulbs, each of which has an exponential lifetime of 1000 hours. What is the expected time for the first of these bulbs to burn out?
-
-    ***==> Solution:***
-    
-    E[Xi] = 1 / λi = 1000
-    
-    Expected lifetime of a bulb is 1000 hours.
-    
-    λi = 1 / 1000
-    
-    Xi is exponential so
-    
-    min{X1,X2,...,X100} ∼ exponential (∑ i=1 to 100 for λi)
-    
-    E[min Xi] = 1/ (1/10) = 10
-    
-    
-    **==> Expected time for the first of these bulbs to burn out is 10 hours**
 
 ---  
 
-14. Assume that X1 and X2 are independent random variables, each having an exponential density with parameter λ. Show that Z=X1−X2 has density  
+# Problem 1.
+
+Using R, generate a random variable X that has 10,000 random uniform numbers from 1 to N, where N can be any number of your choosing greater than or equal to 6.  Then generate a random variable Y that has 10,000 random normal numbers with a mean of $\mu =\sigma  =\frac{(N+1)}{2}.$      
+
+```{r}
+set.seed(246)
+N <- 6             # N can be any number of your choosing greater than or equal to 6
+n <- 10000        # 10,000 random uniform numbers 
+
+mu <- sigma <- (N + 1)/2
+
+
+df <- data.frame(X = runif(n, min=1, max=N), 
+                 Y = rnorm(n, mean=mu, sd=sigma))
+summary(df$X)
+
+summary(df$Y)
+
+```  
   
-$fZ(z)=(1/2)λe−λ|z|$
-    
-***==> Solution:***  
+---  
 
-  
-![.](./Capture_HW8_PS2.PNG) 
+## Probability
 
----   
+Calculate as a minimum the below probabilities a through c.  Assume the small letter "x" is estimated as the median of the X variable, and the small letter "y" is estimated as the 1st quartile of the Y variable.  Interpret the meaning of all probabilities.    
 
-1. Let X be a continuous random variable with mean μ=10 and variance σ2=100/3. Using Chebyshev’s Inequality, find an upper bound for the following probabilities. 
+```{r}
+x <- median(df$X)
+y <- as.numeric(quantile(df$Y)["25%"])
 
-    a. P(|X−10|≥2)  
-        ```{r}
-        var <- 100/3
-        e <- 2
-        p <- var / e^2
-        paste0('Upper bound is ', round(p, 4))
-        ```
-    
-    b. P(|X−10|≥5)   
-        ```{r}
-        var <- 100/3
-        e <- 5
-        p <- var / e^2
-        paste0('Upper bound is ', round(p, 4))
-        ```
-    
-    c. P(|X−10|≥9)    
-        ```{r}
-        var <- 100/3
-        e <- 9
-        p <- var / e^2
-        paste0('Upper bound is ', round(p, 4))
-        ```
-    
-    d. (|X−10|≥20)    
-        ```{r}
-        var <- 100/3
-        e <- 20
-        p <- var / e^2
-        paste0('Upper bound is ', round(p, 4))
-        ```
+
+```  
+
+1) a.   P(X>x | X>y)		b.  P(X>x, Y>y)		c.  P(X<x | X>y)				  
+
+```{r}
+# a. P(X>x | X>y)
+p_1 <- df %>%
+  filter(df$X > x,df$X > y) %>%
+  nrow() / n
+
+P_2 <- df %>%
+  filter(X > y) %>%
+  nrow() / n
+
+p_a <- p_1 / P_2   # P(X>x | X>y)
+
+# b. P(X>x, Y>y)
+p_b <- df %>%
+  filter(X > x,Y > y) %>%
+  nrow() / n
+
+# c. P(X<x | X>y)
+p_1 <- df %>%
+  filter(X < x,X > y) %>%
+  nrow() / n
+
+P_2 <- df %>%
+  filter(X > y) %>%
+  nrow() / n
+
+p_c <- p_1 / P_2   #P(X<x | X>y)
+
+```  
+
+---  
+
+## Marginal and Joint Probabilities    
+
+2) Investigate whether P(X>x and Y>y)=P(X>x)P(Y>y) by building a table and evaluating the marginal and joint probabilities.     
+
+```{r}  
+# Joint Probabilities:
+df2 <- df %>%
+  mutate(A = ifelse(X > x, " X greater than x", " X not greater than x"),
+         B = ifelse(Y > y, " Y greater than y", " Y not greater than y")) %>%
+  group_by(A, B) %>%
+  summarise(count = n()) %>%
+  mutate(probability = count / n)
+
+# Marginal Probabilities #A:
+df2 <- df2 %>%
+  ungroup() %>%
+  group_by(A) %>%
+  summarise(count = sum(count),
+            probability = sum(probability)) %>%
+  mutate(B = "Total") %>%
+  bind_rows(df2)
+
+# Marginal Probabilities #B:
+df2 <- df2 %>%
+  ungroup() %>%
+  group_by(B) %>%
+  summarise(count = sum(count),
+            probability = sum(probability)) %>%
+  mutate(A = "Total") %>%
+  bind_rows(df2)
+
+# Final Table:
+df2 %>%
+  select(- count) %>%
+  spread(A, probability) %>%
+  rename(" " = B)
+
+```
+**=> P(X>x and Y>y) is 0.370 P(X>x)P(Y>y) is 0.5 × 0.75 which is 0.375. They are not the same.**
 
 ---
+
+## Fisher’s Exact Test and Chi Square Test
+
+3) Check to see if independence holds by using Fisher’s Exact Test and the Chi Square Test.  What is the difference between the two? Which is most appropriate?    
+
+```{r}
+df3 <- df2 %>%
+  filter(A != "Total",
+         B != "Total") %>%
+  select(-probability) %>%
+  spread(A, count) %>%
+  as.data.frame()
+
+row.names(df3) <- df3$B
+
+df3 <- df3 %>%
+  select(-B) %>%
+  as.matrix() 
+
+
+fisher.test(df3)
+
+chisq.test(df3)
+
+```
+
+**==> Fisher’s Exact Test is for is used when you have small cell sizes (less than 5). The Chi Square Test is used when the cell sizes are large. It would be appropriate in this case.**
+
+---  
+
+
+# Problem 2.
+
+You are to register for Kaggle.com (free) and compete in the House Prices: Advanced Regression Techniques competition.  https://www.kaggle.com/c/house-prices-advanced-regression-techniques .
+
+
+## Descriptive and Inferential Statistics  
+
+==> We will load the data and get summary of the data:
+
+```{r}
+# load data and select ignore the index variable
+training_data <- read.csv("train.csv", header = TRUE, stringsAsFactors = FALSE)
+
+# View and explore the data
+dim(training_data)
+
+# Summary
+str(training_data)
+
+# view inital data
+kable(head(training_data))
+
+```
+
+==> We will reduce the number of columns to select few key columns for our analysis:
+
+```{r}
+training_data <- training_data [ , c("Id", "LotArea","YearBuilt","YearRemodAdd",
+                                     "BsmtFinSF1","BsmtUnfSF","TotalBsmtSF","X1stFlrSF", 
+                                     "X2ndFlrSF","GrLivArea", "GarageArea",
+                                     "WoodDeckSF", "OpenPorchSF",  "SalePrice" )]
+
+# View and explore the data
+dim(training_data)
+
+# Summary
+str(training_data)
+
+# Summary of the  data: Univariate Summary Statistics
+summary(training_data)
+
+```
+
+---
+
+##  Plots 
+  
+==> We can visualise the data using some plots as below:
+
+```{r}
+training_data[, 2:14] %>%
+  gather() %>% 
+  ggplot(aes(value)) +
+    facet_wrap(~ key, scales = "free") +
+    geom_histogram(color="black", fill="lightblue")
+
+
+```
+
+==> Checking relations between variables:
+
+```{r}
+pairs(training_data[, c("YearBuilt","YearRemodAdd","BsmtUnfSF","X1stFlrSF","X2ndFlrSF",
+                        "GrLivArea", "GarageArea","SalePrice" ) ])
+
+plot(training_data$YearBuilt,training_data$SalePrice)
+plot(training_data$YearRemodAdd,training_data$SalePrice)
+plot(training_data$BsmtUnfSF,training_data$SalePrice)
+plot(training_data$X1stFlrSF,training_data$SalePrice)
+plot(training_data$X2ndFlrSF,training_data$SalePrice)
+plot(training_data$GrLivArea,training_data$SalePrice)
+plot(training_data$GarageArea,training_data$SalePrice)
+
+
+```
+
+---
+
+## Correlation Matrix
+
+=> Correlation matrix for THREE quantitative variables in the dataset. Test the hypotheses that the correlations between each pairwise set of variables is 0 and provide a 80% confidence interval. Discuss the meaning of your analysis. Would you be worried about familywise error? Why or why not?
+
+```{r}
+corr.data <- training_data[, c("GrLivArea", "GarageArea", "SalePrice")]
+corr.matrix <- round(cor(corr.data),2)
+corr.matrix
+
+cor.test(corr.data$GrLivArea, corr.data$GarageArea, conf.level = 0.8)
+
+cor.test(corr.data$GrLivArea, corr.data$SalePrice, conf.level = 0.8)
+
+cor.test(corr.data$GarageArea, corr.data$SalePrice, conf.level = 0.8)
+
+```
+
+==> In all 3 tests we have a very small p value, therefore, we can reject the the null hypothesis. The true correlation is not 0 for any of the three pairs of variables.  
+
+==> We will now check the family-wise error rate  
+```{r}
+fwe_training_data <- 1-((1-0.2)^3)   # 3 is the number of tests and 0.02 is the ampha
+fwe_training_data
+
+```
+
+==> So the probability of a family-wise error is just over 49%. Which is a really high probability of committing a Type I error.    
+
+---
+
+## Linear Algebra and Correlation
+
+==> Invert correlation matrix from above. (This is known as the precision matrix and contains variance inflation factors on the diagonal.) Multiply the correlation matrix by the precision matrix, and then multiply the precision matrix by the correlation matrix. Conduct LU decomposition on the matrix. 
+
+```{r}
+precision.matrix <- solve(corr.matrix)
+precision.matrix
+
+round(corr.matrix %*% precision.matrix, 2)
+
+round(precision.matrix %*% corr.matrix, 2)
+
+lu.decomposition(corr.matrix)
+
+```
+
+---
+
+## Calculus-Based Probability & Statistics
+
+Many times, it makes sense to fit a closed form distribution to data. Select a variable in the Kaggle.com training dataset that is skewed to the right, shift it so that the minimum value is absolutely above zero if necessary. Then load the MASS package and run fitdistr to fit an exponential probability density function. (See https://stat.ethz.ch/R-manual/R-devel/library/MASS/html/fitdistr.html). Find the optimal value of λ for this distribution, and then take 1000 samples from this exponential distribution using this value (e.g., rexp(1000, λ)). Plot a histogram and compare it with a histogram of your original variable.   Using the exponential pdf, find the 5th and 95th percentiles using the cumulative distribution function (CDF).   Also generate a 95% confidence interval from the empirical data, assuming normality.  Finally, provide the empirical 5th percentile and 95th percentile of the data.  Discuss.
+
+
+
+```{r}
+min(training_data$GarageArea)
+hist(training_data$GarageArea, breaks = 20)
+
+```
+
+==> Running fitdistr to fit an exponential probability density function:    
+
+```{r}
+library(MASS)
+
+df_fitdistr <- fitdistr(training_data$GarageArea, densfun = 'exponential')
+lambda <- df_fitdistr$estimate
+exp.dist <- rexp(1000, lambda)
+
+```
+
+==> We will now compare it with a histogram of the original variable:  
+
+```{r}
+par(mfrow=c(1,2))
+hist(training_data$GarageArea, breaks = 20)
+hist(exp.dist, breaks = 20)
+
+```
+
+==> Finding the 5th and 95th percentiles using the cumulative distribution function:
+```{r}
+round(quantile(exp.dist, c(.05, .95)), 3)
+
+```
+
+==> Generating 95% confidence interval from the empirical data, assuming normality. Finally, provide the empirical 5th percentile and 95th percentile of the data :
+
+```{r}
+conf_int <- t.test(training_data$GarageArea)
+conf_int
+
+round(quantile(training_data$GarageArea, c(.05, .95)), 3)
+
+```
+
+==> The simulated data is not a good fit for the observed data in this case. it is much more skewed than our original data.  
+
+---  
+
+
+## Modeling
+
+Build some type of multiple regression  model and submit your model to the competition board.  Provide your complete model summary and results with analysis.  Report your Kaggle.com user name and score
+
+```{r}
+
+# Standardize predictors
+means <- sapply(training_data[,2:13],mean)
+stdev <- sapply(training_data[,2:13],sd)
+training_data_scaled <- as.data.frame(scale(training_data[,2:13], center=means, scale=stdev))
+training_data_scaled$SalePrice <- training_data$SalePrice
+training_data_scaled$Id <- training_data$Id
+head(training_data_scaled)
+
+```
+
+==> MOdel 1 below:
+
+```{r}
+attach(training_data_scaled)
+
+model.1 <- lm(SalePrice ~ LotArea + YearBuilt + YearRemodAdd + BsmtFinSF1 + BsmtUnfSF + TotalBsmtSF + X1stFlrSF + X2ndFlrSF + GrLivArea + GarageArea + WoodDeckSF + OpenPorchSF)
+summary(model.1)
+
+```
+
+==> We will now try to Remove Highest P-values One by One and try get to a optimized model:
+
+==> Remove BsmtUnfSF  , OpenPorchSF     , X2ndFlrSF  , GrLivArea , X1stFlrSF             
+
+```{r}
+model.final <- lm(SalePrice ~ LotArea + YearBuilt + YearRemodAdd + BsmtFinSF1 + TotalBsmtSF + GarageArea + WoodDeckSF )
+summary(model.final)
+```
+
+==> Our final model has all very low p-values and a moderately OK R2 at 0.6063.
+
+```{r}
+par(mfrow=c(2,2))
+plot(model.final)
+
+```
+
+--- 
+
+## Test Data  
+
+==> Let’s see how it does on the test data…
+
+```{r}
+#Load the data and remove columns same as our training data
+testing_data <- read.csv("test.csv")
+
+#reducing columns as done with training data:
+testing_data <- testing_data [ , c("Id", "LotArea","YearBuilt","YearRemodAdd",
+                                     "BsmtFinSF1","BsmtUnfSF","TotalBsmtSF","X1stFlrSF", 
+                                     "X2ndFlrSF","GrLivArea", "GarageArea",
+                                     "WoodDeckSF", "OpenPorchSF" )]
+
+# View and explore the data
+dim(testing_data)
+
+# Summary
+str(testing_data)
+
+# Summary of the  data: Univariate Summary Statistics
+summary(testing_data)
+
+```
+
+==> running against the model:
+
+```{r}
+# Standardize test predictors
+testing_data_scaled <- as.data.frame(scale(testing_data[,2:13], center=means, scale=stdev))
+testing_data_scaled$SalePrice <- testing_data$SalePrice
+testing_data_scaled$Id <- testing_data$Id
+head(testing_data_scaled)
+
+```
+
+## Test Data Prediction
+
+```{r}
+test_predictions <- predict(model.final,newdata=testing_data_scaled)
+test_predictions <- data.frame(as.vector(test_predictions))
+test_predictions$Id <- testing_data_scaled$Id
+test_predictions[,c(1,2)] <- test_predictions[,c(2,1)]
+colnames(test_predictions) <- c("Id", "SalePrice")
+test_predictions[is.na(test_predictions)] <- 0
+head(test_predictions)
+
+```
+
+==> Writing to csv file for submission:
+
+```{r}
+write.csv(test_predictions,'test_predictions.csv', row.names=FALSE)
+```
+
+---
+
+## Kaggle Score
+
+**Kaggle.com User Name:**      ***vinayakkamath92***   
+**Kaggle.com Score:**          ***0.49672***  
+**Kaggle.com Rank:**           ***4973***    
+  
+![Kaggle Score ScreenShot](./Capture_KaggleScore.PNG)
+
+---
+
