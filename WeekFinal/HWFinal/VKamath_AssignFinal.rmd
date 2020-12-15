@@ -73,10 +73,15 @@ P_2 <- df %>%
 
 p_a <- p_1 / P_2   # P(X>x | X>y)
 
+p_a
+
 # b. P(X>x, Y>y)
 p_b <- df %>%
   filter(X > x,Y > y) %>%
   nrow() / n
+
+p_b
+
 
 # c. P(X<x | X>y)
 p_1 <- df %>%
@@ -89,6 +94,8 @@ P_2 <- df %>%
 
 p_c <- p_1 / P_2   #P(X<x | X>y)
 
+p_c
+
 ```  
 
 ---  
@@ -98,6 +105,8 @@ p_c <- p_1 / P_2   #P(X<x | X>y)
 2) Investigate whether P(X>x and Y>y)=P(X>x)P(Y>y) by building a table and evaluating the marginal and joint probabilities.     
 
 ```{r}  
+library(dplyr)
+
 # Joint Probabilities:
 df2 <- df %>%
   mutate(A = ifelse(X > x, " X greater than x", " X not greater than x"),
